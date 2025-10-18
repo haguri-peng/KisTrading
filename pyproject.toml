@@ -1,0 +1,17 @@
+[project]
+name = "kis-auto-trading"
+version = "1.0.0"
+description = "KIS Auto Trading with TradingView's Webhook"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=2.3.1",
+    "pycryptodome>=3.23.0",
+    "pyqt6>=6.9.1",
+    "pyside6>=6.9.1",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.4",
+    "websockets>=15.0.1",
+    "Flask>=3.1.1",
+    "python-dotenv>=1.1.1",
+]

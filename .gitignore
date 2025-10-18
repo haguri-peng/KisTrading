@@ -1,0 +1,17 @@
+### IntelliJ IDEA ##
+.idea
+
+### Mac OS ###
+.DS_Store
+
+### venv ###
+.venv
+
+### pycache ###
+__pycache__
+
+### logs ###
+logs
+
+### Test ###
+test.py
