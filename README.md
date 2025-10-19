@@ -8,8 +8,6 @@
 
 🎰️ **인증서가 없는 경우**: 인증서 없이도 구성할 수 있습니다. [설정 > 인증서가 없는 경우](#인증서가-없는-경우) 로 이동하여 적용 방법을 확인하면 됩니다.
 
----
-
 ## 프로젝트 구조
 
 ```shell
@@ -37,8 +35,6 @@
 └── webserver.py           # Flask 웹서버 (TradingView webhook 수신)
 ```
 
----
-
 ## 요구사항
 
 - Python 3.13 이상
@@ -46,13 +42,11 @@
 - TradingView 계정 (webhook 신호 전송용)
 - Gmail 계정 (이메일 알림용, 앱 비밀번호 필요) - 필수 아님
 
----
-
 ## 설치
 
 이 프로젝트는 `uv` 패키지 매니저를 사용합니다. (uv가 없으면 설치 가이드 참조)
 
-- 리포지토리 클론
+- Repo clone
 
 ```shell
 git clone https://github.com/your-repo/kis-github.git
@@ -67,14 +61,13 @@ uv sync
 
 🛠️ 주요 의존성: pandas, pycryptodome, pyqt6, pyside6, pyyaml, requests, websockets, Flask, python-dotenv
 
----
-
 ## 설정
 
 ### **환경 변수 설정 (.env 파일 생성. 필수 X)**
 
 - 프로젝트 루트에 `.env` 파일을 생성하고 아래 내용을 입력하세요.
 - 이메일을 보내는 경우에만 해당 정보를 입력하면 되며, 이메일을 보내지 않으려면 [webserver.py](webserver.py) 에서 `send_email` 부분을 주석처리 및 삭제하여 구동하세요.
+- 수신 이메일을 카카오(e.g. test@kakao.com)로 설정하면 카톡 알림으로 받을 수 있습니다.
 
 ```text
 SENDER_EMAIL=your_gmail@gmail.com          # Gmail 발신자 이메일
@@ -150,8 +143,6 @@ my_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, 
   (인증서가 없으면 http(80 port)만 사용 가능)
 - [webserver.py](webserver.py) 에서 인증서 관련 내용(`ssl_context`)을 삭제 처리 후 진행
 
----
-
 ## 사용법
 
 ### 인증 및 환경 로드
@@ -208,14 +199,12 @@ send_email("테스트 제목", "테스트 메시지")
     - 성공/실패 시 이메일 알림 전송
 
 ```shell
-uv run. / webserver.py
+uv run ./webserver.py
 ```
 
 ### 로그 확인
 
 - `logs/app.log.YYYY-MM-DD` 파일에서 일자별 로그 확인 (자동 로테이션).
-
----
 
 ## 주요 파일 설명
 
@@ -228,8 +217,6 @@ uv run. / webserver.py
 - **utils.py**: API 에러 핸들링(safe_api_call) 및 헬퍼 함수.
 - **webserver.py**: Flask 웹서버. TradingView webhook 수신 → 매매 처리 → 이메일 알림.
 
----
-
 ## 주의사항
 
 - **API 제한**: KIS API는 호출 횟수 제한이 있음. `smart_sleep()`으로 지연 처리.
@@ -238,13 +225,9 @@ uv run. / webserver.py
 - **에러 핸들링**: 토큰 만료 시 자동 재인증 (utils.py).
 - **테스트**: 실제 매매 전에 모의 환경에서 테스트하세요.
 
----
-
 ## License
 
 MIT License
-
----
 
 ## 참조
 
