@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import logging, os, time
+import logging, os, time, math
 from logging.handlers import TimedRotatingFileHandler
 import pandas as pd
 from typing import Optional
@@ -93,21 +93,21 @@ def process_trade(ticker: str, value: str):
     ka.auth()
     trenv = ka.getTREnv()
 
+    ##############################################################################################
+    # [해외주식] 기본시세 > 해외주식 현재가상세[v1_해외주식-029]
+    ##############################################################################################
+    price_detail_result: Optional[pd.DataFrame] = safe_api_call(price_detail, auth="", excd="NAS", symb=f"{ticker}")
+    logger.info(price_detail_result)
+
+    ticker_last = 0
+    if price_detail_result is not None:
+        if 'last' in price_detail_result.columns:
+            ticker_last = price_detail_result['last'].iloc[0]
+
+    logger.info(f"ticker_last : {ticker_last}")
+
     if value.lower() == 'buy':
         logger.info("++++++++++ buy ++++++++++")
-
-        ##############################################################################################
-        # [해외주식] 기본시세 > 해외주식 현재가상세[v1_해외주식-029]
-        ##############################################################################################
-        price_detail_result: Optional[pd.DataFrame] = safe_api_call(price_detail, auth="", excd="NAS", symb=f"{ticker}")
-        logger.info(price_detail_result)
-
-        ticker_last = 0
-        if price_detail_result is not None:
-            if 'last' in price_detail_result.columns:
-                ticker_last = price_detail_result['last'].iloc[0]
-
-        logger.info(f"ticker_last : {ticker_last}")
 
         if float(ticker_last) > 0:
             # 매수가능금액 확인
@@ -120,15 +120,19 @@ def process_trade(ticker: str, value: str):
                 logger.info(f"max_psbl_qty : {max_psbl_qty}")
 
                 if max_psbl_qty is not None and int(max_psbl_qty) >= 10:
+                    # 소수점 둘째 자리까지 floor 처리한 이후 .1을 더한 값으로 매수 지정가 설정
+                    buy_ord_unpr = math.floor(float(ticker_last) * 100) / 100 + 0.1
+                    logger.info(f"buy_ord_unpr : {buy_ord_unpr}")
+
                     # buy_result = buy_overseas_stock(trenv, ticker, max_psbl_qty)
-                    buy_result = buy_overseas_stock(trenv, ticker, 10)  # 10주씩 매수
+                    buy_result = buy_overseas_stock(trenv, ticker, buy_ord_unpr, 10)  # 10주씩 매수
 
                     logger.info(buy_result)
 
                     if buy_result is not None:
                         # 주문번호(ODNO) 확인. 주문번호가 있으면 정상
                         if buy_result.iloc[0]['ODNO'] is not None:
-                            buy_msg = f"{ticker}, {max_psbl_qty}주를 정상적으로 매수하였습니다. 주문번호: {buy_result.iloc[0]['ODNO']}"
+                            buy_msg = f"{ticker}, 10주를 정상적으로 매수하였습니다. 주문번호: {buy_result.iloc[0]['ODNO']}"
 
                             logger.info(buy_msg)
                             send_email(f"{ticker} 시장가 매수", buy_msg)
@@ -162,12 +166,16 @@ def process_trade(ticker: str, value: str):
                     logger.info(f"psbl_qty : {psbl_qty}")
 
                     # 매도할 수량이 있어야 진행
-                    if psbl_qty is not None and int(psbl_qty) > 0:
+                    if psbl_qty is not None and int(psbl_qty) > 0 and float(ticker_last) > 0:
                         # 10주씩 매도. 단, 10주 미만인 경우 모두 매도한다.
                         psbl_qty = "10" if int(psbl_qty) >= 10 else psbl_qty
                         logger.info(f"psbl_qty2 : {psbl_qty}")
 
-                        sell_result = sell_overseas_stock(trenv, ticker, psbl_qty)
+                        # 소수점 둘째 자리까지 floor 처리한 이후 .1을 제한 값으로 매도 지정가 설정
+                        sell_ord_unpr = math.floor(float(ticker_last) * 100) / 100 - 0.1
+                        logger.info(f"sell_ord_unpr : {sell_ord_unpr}")
+
+                        sell_result = sell_overseas_stock(trenv, ticker, sell_ord_unpr, psbl_qty)
 
                         logger.info(sell_result)
 
