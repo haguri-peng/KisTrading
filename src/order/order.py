@@ -5,7 +5,8 @@ from src.overseas_stock.overseas_stock_functions import order
 from src.utils.utils import safe_api_call
 
 
-def buy_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NASD") -> Optional[pd.DataFrame]:
+def buy_overseas_stock(trenv: tuple, pdno: str, ovrs_ord_unpr: float, ord_qty: int, ovrs_excg_cd="NASD") -> Optional[
+    pd.DataFrame]:
     """
     시장가 매수
     해외거래소 기본 값은 NASDAQ(NASD)
@@ -16,6 +17,9 @@ def buy_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NASD
     if not pdno:
         raise ValueError("No pdno(Ticker).")
 
+    if not ovrs_ord_unpr:
+        raise ValueError("No ovrs_ord_unpr.")
+
     if not ord_qty:
         raise ValueError("No ord_qty(Quantity).")
 
@@ -24,13 +28,13 @@ def buy_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NASD
         "acnt_prdt_cd": trenv.my_prod,
         "ovrs_excg_cd": ovrs_excg_cd,  # 해외거래소코드
         "pdno": pdno,  # 종목코드
-        "ord_qty": ord_qty,
-        "ovrs_ord_unpr": "0",  # 1주당 가격 (* 시장가의 경우 1주당 가격을 공란으로 비우지 않음 "0"으로 입력)
+        "ord_qty": str(ord_qty),
+        "ovrs_ord_unpr": str(ovrs_ord_unpr),  # 1주당 가격 (* 시장가의 경우 1주당 가격을 공란으로 비우지 않음 "0"으로 입력)
         "ord_dv": "buy",
         "ctac_tlno": "",
         "mgco_aptm_odno": "",
         "ord_svr_dvsn_cd": "0",
-        "ord_dvsn": "01",  # 00:지정가, 01:시장가
+        "ord_dvsn": "00",  # 00:지정가. 시장가는 거래소 정책상 제한
         "env_dv": "real"
     }
     buy_order_result = safe_api_call(order, **bo_params)
@@ -39,7 +43,8 @@ def buy_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NASD
     return buy_order_result
 
 
-def sell_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NASD") -> Optional[pd.DataFrame]:
+def sell_overseas_stock(trenv: tuple, pdno: str, ovrs_ord_unpr: float, ord_qty: int, ovrs_excg_cd="NASD") -> Optional[
+    pd.DataFrame]:
     """
     시장가 매도
     해외거래소 기본 값은 NASDAQ(NASD)
@@ -50,6 +55,9 @@ def sell_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NAS
     if not pdno:
         raise ValueError("No pdno(Ticker).")
 
+    if not ovrs_ord_unpr:
+        raise ValueError("No ovrs_ord_unpr.")
+
     if not ord_qty:
         raise ValueError("No ord_qty(Quantity).")
 
@@ -58,13 +66,13 @@ def sell_overseas_stock(trenv: tuple, pdno: str, ord_qty: int, ovrs_excg_cd="NAS
         "acnt_prdt_cd": trenv.my_prod,
         "ovrs_excg_cd": ovrs_excg_cd,  # 해외거래소코드
         "pdno": pdno,  # 종목코드
-        "ord_qty": ord_qty,
-        "ovrs_ord_unpr": "0",  # 1주당 가격 (* 시장가의 경우 1주당 가격을 공란으로 비우지 않음 "0"으로 입력)
+        "ord_qty": str(ord_qty),
+        "ovrs_ord_unpr": str(ovrs_ord_unpr),  # 1주당 가격 (* 시장가의 경우 1주당 가격을 공란으로 비우지 않음 "0"으로 입력)
         "ord_dv": "sell",
         "ctac_tlno": "",
         "mgco_aptm_odno": "",
         "ord_svr_dvsn_cd": "0",
-        "ord_dvsn": "01",  # 00:지정가, 01:시장가
+        "ord_dvsn": "00",  # 00:지정가. 시장가는 거래소 정책상 제한
         "env_dv": "real"
     }
     sell_order_result = safe_api_call(order, **bo_params)
