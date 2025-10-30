@@ -44,12 +44,12 @@
 
 ## 설치
 
-이 프로젝트는 `uv` 패키지 매니저를 사용합니다. (uv가 없으면 설치 가이드 참조)
+이 프로젝트는 `uv` 패키지 매니저를 사용합니다. (uv가 없으면, 운영체제별 설치 가이드를 검색하여 참조)
 
 - Repo clone
 
 ```shell
-git clone https://github.com/your-repo/kis-github.git
+git clone https://github.com/haguri-peng/KisTrading.git
 cd kis-github
 ```
 
@@ -170,8 +170,8 @@ print(balance[0])  # 잔고 DataFrame
 ```python
 from src.order.order import buy_overseas_stock, sell_overseas_stock
 
-buy_result = buy_overseas_stock(trenv, "TSLA", 10)  # TSLA 10주 매수
-sell_result = sell_overseas_stock(trenv, "TSLA", 5)  # TSLA 5주 매도
+buy_result = buy_overseas_stock(trenv, "TSLA", 694.20, 10)  # TSLA 10주 매수
+sell_result = sell_overseas_stock(trenv, "TSLA", 694.20, 5)  # TSLA 5주 매도
 ```
 
 - 시세 정보 조회 (stocks_info.py)
