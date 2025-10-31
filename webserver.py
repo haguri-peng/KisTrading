@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 import logging, os, time, math
 from logging.handlers import TimedRotatingFileHandler
 import pandas as pd
@@ -45,6 +45,14 @@ webhook_cache = defaultdict(float)  # 기본값 0.0 (float)
 
 # 중복 검사 시간 창: 30초
 DUPLICATE_WINDOW = 30
+
+
+# /webhook POST가 아닌 모든 요청을 무시하고 404 반환
+@app.before_request
+def before_request():
+    if request.path != '/webhook' or request.method != 'POST':
+        logger.error(f"method : {request.method}, path : {request.path}")
+        abort(404)  # 즉시 404 반환
 
 
 # Webhook
