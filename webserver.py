@@ -6,7 +6,7 @@ from typing import Optional
 from collections import defaultdict  # 캐시를 위한 defaultdict 추가
 
 # Utils
-from src.utils.utils import safe_api_call
+from src.utils.utils import safe_api_call, custom_namer
 from src.utils.email_utils import send_email
 
 # KIS
@@ -29,7 +29,8 @@ handler = TimedRotatingFileHandler(
     backupCount=30,  # 최대 30일치 백업 파일 유지 (필요 시 조정)
     encoding='utf-8'  # UTF-8 인코딩
 )
-handler.suffix = '%Y-%m-%d.log'  # 로테이션 파일명: app.log.YYYY-MM-DD
+handler.suffix = '%Y-%m-%d'  # 로테이션 파일명: app.log.YYYY-MM-DD
+handler.namer = custom_namer
 handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))  # 로그 형식
 
 # 로거 설정
