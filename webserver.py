@@ -4,6 +4,7 @@ from logging.handlers import TimedRotatingFileHandler
 import pandas as pd
 from typing import Optional
 from collections import defaultdict  # 캐시를 위한 defaultdict 추가
+from uvicorn import Config, Server
 
 # Utils
 from src.utils.utils import safe_api_call, custom_namer
@@ -213,4 +214,16 @@ if __name__ == '__main__':
     logger.info("TradeHook Web Server starts..")
 
     # ssl_context 부분은 인증서가 있는 경우에만 입력
-    app.run(host='0.0.0.0', port=5556, debug=False, ssl_context=('crt.pem', 'key.pem'))
+    # app.run(host='0.0.0.0', port=5556, debug=False, ssl_context=('crt.pem', 'key.pem'))
+
+    config = Config(
+        "webserver:app",
+        host="0.0.0.0",
+        port=5556,
+        ssl_certfile="crt.pem",
+        ssl_keyfile="key.pem",
+        timeout_keep_alive=10,  # 10초 timeout (CLOSE_WAIT 방지)
+        interface="wsgi"  # 명시적으로 WSGI로 지정
+    )
+    server = Server(config)
+    server.run()

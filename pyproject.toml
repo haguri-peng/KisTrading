@@ -14,4 +14,5 @@ dependencies = [
     "websockets>=15.0.1",
     "Flask>=3.1.1",
     "python-dotenv>=1.1.1",
+    "uvicorn>=0.30.1",
 ]
